@@ -71,13 +71,13 @@ def main():
         new_image = edgeiq.markup_image(image, object_detection_predictions)
 
         #perform another detection
-        results = obj_detect.detect_objects(frame)
+        #results = obj_detect.detect_objects(frame)
 
         #terminate previous tracking ans start tracking new detect_objects
-        if tracker.count()
-            tracker.stop_all()
-        for prediction in results.predictions:
-            tracker.start(frame, prediction.box, prediction.label)
+        #if tracker.count()
+            #tracker.stop_all()
+        #for prediction in results.predictions:
+        #    tracker.start(frame, prediction.box, prediction.label)
 
         #Across detections
         #obj_detect = edgeiq.ObjectDetection("alwaysai/mobilenet_ssd")
@@ -86,9 +86,36 @@ def main():
 
         #tracker = edgeiq.CentroidTracker()
 
-        #results = obj_detect.detect_objects(frame)
+        #for x in range(5):
+            #results = obj_detect.detect_objects(frame)
+
+        #for prediction in results.predictions:
+            #tracker.start(frame, prediction)
 
         #objects = tracker.update(results.predictions)
+
+        #specific objects
+        #filtered_predictions = edgeiq.filter_predictions_by_label(predictions, ['human', 'chair', 'table'])
+
+        #bounding box area
+        #filtered_predictions = edgeiq.filter_predictions_by_area(predictions, 1000)
+
+        #filter specific object 1
+        filtered_predictions = edgeiq.filter_predictions_by_label(predictions, ['human'])
+        human_img = edgeiq.cutout_image(image, prediction.box)
+        hum_type = classification.classify_image(human_img)
+        box1 = prediction.box
+
+        #filter specific object 2
+        filtered_predictions = edgeiq.filter_predictions_by_label(predictions, ['chair'])
+        chair_img = edgeiq.cutout_image(image, prediction.box)
+        chair_type = classification.classify_image(chair_img)
+        box2 = prediction.box
+
+        #distance between two objects
+        distance = box1.compute_distance(box2)
+            if distance < 2
+                print("close together")
 
 if __name__ == "__main__":
     main()
