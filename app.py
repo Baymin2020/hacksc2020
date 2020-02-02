@@ -39,6 +39,8 @@ def main():
             time.sleep(2.0)
             fps.start()
 
+            startTime = time.time()
+
             while True:
                 frame = video_stream.read()
                 predictions = []
@@ -55,29 +57,46 @@ def main():
 
                     predictions = results.predictions
                     boxList = []
-                    boxWidthList = []
+                    boxNameList = []
                     for prediction in predictions:
                         text.append("{}: {:2.2f}%".format(prediction.label, prediction.confidence * 100))
                         tracker.start(frame, prediction)
-                        boxList.append(prediction.box)
-                        boxWidthList.append(prediction.box.width)
 
+                        if prediction.label == 'person':
+                            if not boxNameList:
+                                boxList.append(prediction.box)
+                                boxNameList.append(prediction.label)
+                            else:
+                                for name in boxNameList:
+                                    if name == prediction.label:
+                                        break
+                                    else:
+                                        boxList.append(prediction.box)
+                                        boxNameList.append(prediction.label)
+                        elif prediction.label == 'chair':
+                            if not boxNameList:
+                                boxList.append(prediction.box)
+                                boxNameList.append(prediction.label)
+                            else:
+                                for name in boxNameList:
+                                    if name == prediction.label:
+                                        break
+                                    else:
+                                        boxList.append(prediction.box)
+                                        boxNameList.append(prediction.label)
 
-                        # if prediction.label == "human":
-                        #     if not prediction.box in boxList:
-                        #         boxList.append(prediction.box)
-                        # if prediction.label == 'chair':
-                        #     if not prediction.box in boxList:
-                        #         boxList.append(prediction.box)
-
-                    text.append(str(boxWidthList))
+                    text.append(str(boxNameList))
 
                     if len(boxList) >= 2:
-                        distance = (boxList[0]).compute_distance(boxList[1])
-                        if abs(distance) < 2:
-                            print("close together")
+                        distance = boxList[0].compute_distance(boxList[1])
+                        text.append(str(distance))
+                        if abs(distance) < 100:
+                            futureTime = time.time() + 10
+                            text.append(str("At chair"))
+                            if time.time() > futureTime:
+                                text.append(str("Go outside"))
                         else:
-                            print("far apart")
+                            text.append(str("far apart"))
 
                 else:
                     if tracker.count:
