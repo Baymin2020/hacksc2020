@@ -67,7 +67,7 @@ def main():
 
                     text.append(str(boxList))
 
-                    if boxList.len() > 0:
+                    if len(boxList) > 0:
                         distance = boxList.index(0).compute_distance(boxList.index(1))
                         if abs(distance) < 2:
                             print("close together")
