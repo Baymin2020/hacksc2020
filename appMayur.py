@@ -54,11 +54,24 @@ def main():
                         tracker.stop_all()
 
                     predictions = results.predictions
-
+                    boxList = []
                     for prediction in predictions:
                         text.append("{}: {:2.2f}%".format(prediction.label, prediction.confidence * 100))
                         tracker.start(frame, prediction)
+                        if prediction.label == 'human':
+                            if not prediction.box in boxList:
+                                boxList.append(prediction.box)
+                        if prediction.label == 'chair':
+                            if not prediction.box in boxList:
+                                boxList.append(prediction.box)
 
+                    distance = boxList.index(0) - boxList.index(0)
+
+                    if abs(distance) < 2:
+                        print("close together")
+                    else:
+                        print("far apart")
+                            
                 else:
                     if tracker.count:
                         predictions = tracker.update(frame)
