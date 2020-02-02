@@ -32,10 +32,10 @@ def main():
 
                 # Get right shoulder points
                 for ind, pose in enumerate(results.poses):
-                    rightShoulder = pose.key_points[2][1]
+                    rightShoulder_y = pose.key_points[2][1]
 
                 for ind, pose in enumerate(results.poses):
-                    leftShoulder = pose.key_points[5][1]
+                    leftShoulder_y = pose.key_points[5][1]
 
                 for ind, pose in enumerate(results.poses):
                     rightElbow_y = pose.key_points[3][1]
@@ -49,12 +49,12 @@ def main():
                 for ind, pose in enumerate(results.poses):
                     leftWrist_y = pose.key_points[7][1]
 
-                print(rightShoulder_y)
-                print(leftShoulder_y)
-                print(rightElbow_y)
-                print(leftElbow_y)
-                print(rightWrist_y)
-                print(leftWrist_y)
+                text.append(str(rightShoulder_y))
+                text.append(str(leftShoulder_y))
+                text.append(str(rightElbow_y))
+                text.append(str(leftElbow_y))
+                text.append(str(rightWrist_y))
+                text.append(str(leftWrist_y))
 
                 # if rightElbow_y > rightShoulder_y and rightWrist_y > rightShoulder_y:
 
