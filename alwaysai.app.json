@@ -3,6 +3,7 @@
     "start": "python app.py"
   },
   "models": {
-    "alwaysai/human-pose": 5
+    "alwaysai/human-pose": 5,
+    "alwaysai/ssd_mobilenet_v1_coco_2018_01_28": 6
   }
 }
