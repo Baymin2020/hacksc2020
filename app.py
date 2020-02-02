@@ -1,6 +1,7 @@
 import logging
 import time
 import edgeiq
+import numpy as np
 """
 Use pose estimation to determine human poses in realtime. Human Pose returns
 a list of key points indicating joints that can be used for applications such
@@ -9,7 +10,6 @@ as activity recognition and augmented reality.
 Pose estimation is only supported using the edgeIQ container with an NCS
 accelerator.
 """
-
 
 def main():
     pose_estimator = edgeiq.PoseEstimation("alwaysai/human-pose")
@@ -36,14 +36,11 @@ def main():
                 results = pose_estimator.estimate(frame)
                 # Generate text to display on streamer
                 text = ["Model: {}".format(pose_estimator.model_id)]
-                text.append(
-                        "Inference time: {:1.3f} s".format(results.duration))
+
                 for ind, pose in enumerate(results.poses):
-                    text.append("Person {}".format(ind))
-                    text.append('-'*10)
-                    text.append("Key Points:")
                     for key_point in pose.key_points:
                         text.append(str(key_point))
+
                 streamer.send_data(results.draw_poses(frame), text)
 
                 fps.update()
