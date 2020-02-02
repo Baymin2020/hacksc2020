@@ -20,7 +20,8 @@ def main():
     # The number of frames to skip before running detector
     detect_period = 30
 
-    obj_detect = edgeiq.ObjectDetection("alwaysai/ssd_mobilenet_v1_coco_2018_01_28")
+    obj_detect = edgeiq.ObjectDetection(
+            "alwaysai/ssd_mobilenet_v1_coco_2018_01_28")
     obj_detect.load(engine=edgeiq.Engine.DNN)
 
     print("Engine: {}".format(obj_detect.engine))
@@ -53,10 +54,30 @@ def main():
                         tracker.stop_all()
 
                     predictions = results.predictions
-
+                    boxList = []
+                    boxWidthList = []
                     for prediction in predictions:
                         text.append("{}: {:2.2f}%".format(prediction.label, prediction.confidence * 100))
                         tracker.start(frame, prediction)
+                        boxList.append(prediction.box)
+                        boxWidthList.append(prediction.box.width)
+
+
+                        # if prediction.label == "human":
+                        #     if not prediction.box in boxList:
+                        #         boxList.append(prediction.box)
+                        # if prediction.label == 'chair':
+                        #     if not prediction.box in boxList:
+                        #         boxList.append(prediction.box)
+
+                    text.append(str(boxWidthList))
+
+                    if len(boxList) >= 2:
+                        distance = (boxList[0]).compute_distance(boxList[1])
+                        if abs(distance) < 2:
+                            print("close together")
+                        else:
+                            print("far apart")
 
                 else:
                     if tracker.count:
