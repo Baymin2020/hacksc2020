@@ -65,13 +65,15 @@ def main():
                             if not prediction.box in boxList:
                                 boxList.append(prediction.box)
 
-                    distance = boxList.index(0) - boxList.index(0)
+                    text.append(str(boxList))
 
-                    if abs(distance) < 2:
-                        print("close together")
-                    else:
-                        print("far apart")
-                            
+                    if boxList.len() > 0:
+                        distance = boxList.index(0).compute_distance(boxList.index(1))
+                        if abs(distance) < 2:
+                            print("close together")
+                        else:
+                            print("far apart")
+
                 else:
                     if tracker.count:
                         predictions = tracker.update(frame)
