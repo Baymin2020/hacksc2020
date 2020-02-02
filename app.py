@@ -37,8 +37,19 @@ def main():
                     leftShoulder_y = pose.key_points[5][1]
                     rightWrist_y = pose.key_points[4][1]
                     leftWrist_y = pose.key_points[7][1]
+
                     rightHip_y = post.key_points[8][1]
                     leftHip_y = post.key_points[11][1]
+
+                    text.append(str(leftWrist_y))
+
+                    text.append(str("Right Hip Y"))
+                    rightHip_y = pose.key_points[8][1]
+                    text.append(str(rightHip_y))
+
+                    text.append(str("Left Hip Y"))
+                    leftHip_y = pose.key_points[11][1]
+                    text.append(str(leftHip_y))
 
                 if (rightWrist_y < rightShoulder_y) or (leftWrist_y < leftShoulder_y):
                     text.append("Mood: Happy")
