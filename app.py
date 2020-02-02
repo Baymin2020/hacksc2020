@@ -109,10 +109,10 @@ def main():
                         text.append(str("Not in chair"))
                         futureTime = time.time() + 20
 
-                # frame = edgeiq.markup_image(frame, predictions, show_labels=True,
-                #                             show_confidences=False, colors=obj_detect.colors)
+                frame = edgeiq.markup_image(frame, predictions, show_labels=True,
+                                            show_confidences=False, colors=obj_detect.colors)
 
-                # streamer.send_data(results.draw_poses(frame), text)
+                streamer.send_data(results.draw_poses(frame), text)
 
                 streamer.send_data(frame, text)
 
