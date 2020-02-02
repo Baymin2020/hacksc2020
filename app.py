@@ -1,49 +1,64 @@
 import logging
 import time
 import edgeiq
-"""
-Use pose estimation to determine human poses in realtime. Human Pose returns
-a list of key points indicating joints that can be used for applications such
-as activity recognition and augmented reality.
-
-Pose estimation is only supported using the edgeIQ container with an NCS
-accelerator.
-"""
-
+# Including if-statements
 
 def main():
+    rightShoulder_y = 0
+    leftShoulder_y = 0
+    rightElbow_y = 0
+    leftElbow_y = 0
+    rightWrist_y = 0
+    leftWrist_y = 0
+
     pose_estimator = edgeiq.PoseEstimation("alwaysai/human-pose")
     pose_estimator.load(
             engine=edgeiq.Engine.DNN_OPENVINO,
             accelerator=edgeiq.Accelerator.MYRIAD)
-
-    print("Loaded model:\n{}\n".format(pose_estimator.model_id))
-    print("Engine: {}".format(pose_estimator.engine))
-    print("Accelerator: {}\n".format(pose_estimator.accelerator))
 
     fps = edgeiq.FPS()
 
     try:
         with edgeiq.WebcamVideoStream(cam=0) as video_stream, \
                 edgeiq.Streamer() as streamer:
-            # Allow Webcam to warm up
             time.sleep(2.0)
             fps.start()
 
-            # loop detection
             while True:
                 frame = video_stream.read()
                 results = pose_estimator.estimate(frame)
-                # Generate text to display on streamer
+
                 text = ["Model: {}".format(pose_estimator.model_id)]
-                text.append(
-                        "Inference time: {:1.3f} s".format(results.duration))
+
+                # Get right shoulder points
                 for ind, pose in enumerate(results.poses):
-                    text.append("Person {}".format(ind))
-                    text.append('-'*10)
-                    text.append("Key Points:")
-                    for key_point in pose.key_points:
-                        text.append(str(key_point))
+                    rightShoulder = pose.key_points[2][1]
+
+                for ind, pose in enumerate(results.poses):
+                    leftShoulder = pose.key_points[5][1]
+
+                for ind, pose in enumerate(results.poses):
+                    rightElbow_y = pose.key_points[3][1]
+
+                for ind, pose in enumerate(results.poses):
+                    leftElbow_y = pose.key_points[6][1]
+
+                for ind, pose in enumerate(results.poses):
+                    rightWrist_y = pose.key_points[4][1]
+
+                for ind, pose in enumerate(results.poses):
+                    leftWrist_y = pose.key_points[7][1]
+
+                print(rightShoulder_y)
+                print(leftShoulder_y)
+                print(rightElbow_y)
+                print(leftElbow_y)
+                print(rightWrist_y)
+                print(leftWrist_y)
+
+                # if rightElbow_y > rightShoulder_y and rightWrist_y > rightShoulder_y:
+
+
                 streamer.send_data(results.draw_poses(frame), text)
 
                 fps.update()
