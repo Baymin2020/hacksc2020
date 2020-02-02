@@ -63,9 +63,9 @@ def main():
                 text.append(str(abs(leftWrist_y - rightElbow_y)))
                 text.append(str(abs(leftWrist_x - rightElbow_x)))
 
-                if rightWrist_y > rightShoulder_y and rightElbow_y > rightShoulder_y and leftWrist_y > leftShoulder_y and leftElbow_y > leftShoulder_y:
+                if (rightWrist_y > rightShoulder_y) and (leftWrist_y > leftShoulder_y):
                     text.append("Mood: Happy")
-                elif abs(rightWrist_y - leftElbow_y) < 5 and abs(rightWrist_x - leftElbow_x) < 5 and abs(lightWrist_y - rightElbow_y) < 5 and abs(leftWrist_x - rightElbow_x) < 5:
+                elif abs(rightWrist_y - leftElbow_y) < 40 and abs(rightWrist_x - leftElbow_x) < 40 and abs(lightWrist_y - rightElbow_y) < 40 and abs(leftWrist_x - rightElbow_x) < 40:
                     text.append("Mood: Angry")
                 else:
                     text.append("Mood: Idle")
