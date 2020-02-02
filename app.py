@@ -64,7 +64,7 @@ def main():
                         tracker.start(frame, prediction)
 
                         if prediction.label == 'person':
-                            if not boxNameList:
+                            if not boxNameList and ((prediction.confidence * 100) > 80):
                                 boxList.append(prediction.box)
                                 boxNameList.append(prediction.label)
                             else:
@@ -72,10 +72,11 @@ def main():
                                     if name == prediction.label:
                                         break
                                     else:
-                                        boxList.append(prediction.box)
-                                        boxNameList.append(prediction.label)
+                                        if ((prediction.confidence * 100) > 80):
+                                            boxList.append(prediction.box)
+                                            boxNameList.append(prediction.label)
                         elif prediction.label == 'chair':
-                            if not boxNameList:
+                            if not boxNameList and ((prediction.confidence * 100) > 80):
                                 boxList.append(prediction.box)
                                 boxNameList.append(prediction.label)
                             else:
@@ -83,15 +84,16 @@ def main():
                                     if name == prediction.label:
                                         break
                                     else:
-                                        boxList.append(prediction.box)
-                                        boxNameList.append(prediction.label)
+                                        if ((prediction.confidence * 100) > 80):
+                                            boxList.append(prediction.box)
+                                            boxNameList.append(prediction.label)
 
                     text.append(str(boxNameList))
 
                     if len(boxList) >= 2:
                         distance = boxList[0].compute_distance(boxList[1])
                         text.append(str(distance))
-                        if abs(distance) < 120:
+                        if abs(distance) < 112:
                             text.append(str("At chair"))
                             if time.time() >= futureTime:
                                 text.append(str("Get Out"))
