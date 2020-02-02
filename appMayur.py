@@ -65,8 +65,7 @@ def main():
 
         for predictions in results.predictions:
             tracker.start(frame, prediction)
-
-        tracker_predictions = tracker.update(frame)
+            tracker_predictions = tracker.update(frame)
 
         new_image = edgeiq.markup_image(image, object_detection_predictions)
 
