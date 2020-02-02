@@ -1,28 +1,35 @@
-import logging
 import time
 import edgeiq
 """
-Use pose estimation to determine human poses in realtime. Human Pose returns
-a list of key points indicating joints that can be used for applications such
-as activity recognition and augmented reality.
+Use object detection and tracking to follow objects as they move across
+the frame. Detectors are resource expensive, so this combination
+reduces stress on the system, increasing the resulting bounding box output
+rate. The detector is set to execute every 30 frames, but this can be
+adjusted by changing the value of the `detect_period` variable.
 
-Pose estimation is only supported using the edgeIQ container with an NCS
-accelerator.
+To change the computer vision model, follow this guide:
+https://dashboard.alwaysai.co/docs/application_development/changing_the_model.html
+
+To change the engine and accelerator, follow this guide:
+https://dashboard.alwaysai.co/docs/application_development/changing_the_engine_and_accelerator.html
 """
 
-#Object Tracking
-
 def main():
-    pose_estimator = edgeiq.PoseEstimation("alwaysai/human-pose")
-    pose_estimator.load(
-            engine=edgeiq.Engine.DNN_OPENVINO,
-            accelerator=edgeiq.Accelerator.MYRIAD)
+    # The current frame index
+    frame_idx = 0
+    # The number of frames to skip before running detector
+    detect_period = 30
 
-    #instantiate ObjectDetection object
-    obj_detect = edgeiq.ObjectDetection("alwaysai/mobilenet_ssd")
-    #load engine and accelerator using the load() function
-    obj_detect = load(engine = edgeiq.ENGINE.DNN)
+    obj_detect = edgeiq.ObjectDetection(
+            "alwaysai/ssd_mobilenet_v1_coco_2018_01_28")
+    obj_detect.load(engine=edgeiq.Engine.DNN)
 
+    print("Engine: {}".format(obj_detect.engine))
+    print("Accelerator: {}\n".format(obj_detect.accelerator))
+    print("Model:\n{}\n".format(obj_detect.model_id))
+    print("Labels:\n{}\n".format(obj_detect.labels))
+
+    tracker = edgeiq.CorrelationTracker(max_objects=5)
     fps = edgeiq.FPS()
 
     try:
@@ -32,89 +39,47 @@ def main():
             time.sleep(2.0)
             fps.start()
 
-            # loop detection
             while True:
                 frame = video_stream.read()
-                results = pose_estimator.estimate(frame)
-                # Generate text to display on streamer
-                text = ["Model: {}".format(pose_estimator.model_id)]
-                text.append(
-                        "Inference time: {:1.3f} s".format(results.duration))
-                for ind, pose in enumerate(results.poses):
-                    text.append("Person {}".format(ind))
-                    text.append('-'*10)
-                    text.append("Key Points:")
-                    for key_point in pose.key_points:
-                        text.append(str(key_point))
-                streamer.send_data(results.draw_poses(frame), text)
+                predictions = []
+                if frame_idx % detect_period == 0:
+                    results = obj_detect.detect_objects(frame, confidence_level=.5)
+                    # Generate text to display on streamer
+                    text = ["Model: {}".format(obj_detect.model_id)]
+                    text.append("Inference time: {:1.3f} s".format(results.duration))
+                    text.append("Objects:")
 
+                    # Stop tracking old objects
+                    if tracker.count:
+                        tracker.stop_all()
+
+                    predictions = results.predictions
+
+                    for prediction in predictions:
+                        text.append("{}: {:2.2f}%".format(prediction.label, prediction.confidence * 100))
+                        tracker.start(frame, prediction)
+
+                else:
+                    if tracker.count:
+                        predictions = tracker.update(frame)
+
+                frame = edgeiq.markup_image(frame, predictions, show_labels=True,
+                        show_confidences=False, colors=obj_detect.colors)
+                streamer.send_data(frame, text)
+                frame_idx += 1
                 fps.update()
 
                 if streamer.check_exit():
                     break
+
     finally:
+        tracker.stop_all()
         fps.stop()
+        print("elapsed time: {:.2f}".format(fps.get_elapsed_seconds()))
+        print("approx. FPS: {:.2f}".format(fps.compute_fps()))
 
-        #Across Frames
+        print("Program Ending")
 
-        #instantiate CorrelationTracker Object
-        tracker = edgeiq.CorrelationTracker()
-
-        #perform object detection and return an object containing predictions
-        results = obj_detect.detect_objects(frame)
-
-        for predictions in results.predictions:
-            tracker.start(frame, prediction)
-            tracker_predictions = tracker.update(frame)
-
-        new_image = edgeiq.markup_image(image, object_detection_predictions)
-
-        #perform another detection
-        #results = obj_detect.detect_objects(frame)
-
-        #terminate previous tracking ans start tracking new detect_objects
-        #if tracker.count()
-            #tracker.stop_all()
-        #for prediction in results.predictions:
-        #    tracker.start(frame, prediction.box, prediction.label)
-
-        #Across detections
-        #obj_detect = edgeiq.ObjectDetection("alwaysai/mobilenet_ssd")
-        #load engine and accelerator using the load() function
-        #obj_detect = load(engine = edgeiq.ENGINE.DNN)
-
-        #tracker = edgeiq.CentroidTracker()
-
-        #for x in range(5):
-            #results = obj_detect.detect_objects(frame)
-
-        #for prediction in results.predictions:
-            #tracker.start(frame, prediction)
-
-        #objects = tracker.update(results.predictions)
-
-        #specific objects
-        #filtered_predictions = edgeiq.filter_predictions_by_label(predictions, ['human', 'chair', 'table'])
-
-        #bounding box area
-        #filtered_predictions = edgeiq.filter_predictions_by_area(predictions, 1000)
-
-        #filter specific object 1
-        filtered_predictions = edgeiq.filter_predictions_by_label(predictions, ['human'])
-        human_img = edgeiq.cutout_image(image, prediction.box)
-        hum_type = classification.classify_image(human_img)
-        box1 = prediction.box
-
-        #filter specific object 2
-        filtered_predictions = edgeiq.filter_predictions_by_label(predictions, ['chair'])
-        chair_img = edgeiq.cutout_image(image, prediction.box)
-        chair_type = classification.classify_image(chair_img)
-        box2 = prediction.box
-
-        #distance between two objects
-        distance = box1.compute_distance(box2)
-            if distance < 2
-                print("close together")
 
 if __name__ == "__main__":
     main()
