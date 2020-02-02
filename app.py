@@ -58,6 +58,11 @@ def main():
                 # text.append(str(rightWrist_y))
                 # text.append(str(leftWrist_y))
 
+                text.append(str(abs(rightWrist_y - leftElbow_y)))
+                text.append(str(abs(rightWrist_x - leftElbow_x)))
+                text.append(str(abs(leftWrist_y - rightElbow_y)))
+                text.append(str(abs(leftWrist_x - rightElbow_x)))
+
                 if rightWrist_y > rightShoulder_y and rightElbow_y > rightShoulder_y and leftWrist_y > leftShoulder_y and leftElbow_y > leftShoulder_y:
                     text.append("Mood: Happy")
                 elif abs(rightWrist_y - leftElbow_y) < 5 and abs(rightWrist_x - leftElbow_x) < 5 and abs(lightWrist_y - rightElbow_y) < 5 and abs(leftWrist_x - rightElbow_x) < 5:
