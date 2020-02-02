@@ -40,6 +40,7 @@ def main():
             fps.start()
 
             startTime = time.time()
+            futureTime = startTime + 20
 
             while True:
                 frame = video_stream.read()
@@ -90,13 +91,13 @@ def main():
                     if len(boxList) >= 2:
                         distance = boxList[0].compute_distance(boxList[1])
                         text.append(str(distance))
-                        if abs(distance) < 100:
-                            futureTime = time.time() + 10
+                        if abs(distance) < 120:
                             text.append(str("At chair"))
-                            if time.time() > futureTime:
-                                text.append(str("Go outside"))
+                            if time.time() >= futureTime:
+                                text.append(str("Get Out"))
                         else:
-                            text.append(str("far apart"))
+                            text.append(str("Not in chair"))
+                            futureTime = time.time() + 20
 
                 else:
                     if tracker.count:
