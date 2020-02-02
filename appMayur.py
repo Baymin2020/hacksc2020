@@ -58,19 +58,23 @@ def main():
                     for prediction in predictions:
                         text.append("{}: {:2.2f}%".format(prediction.label, prediction.confidence * 100))
                         tracker.start(frame, prediction)
-                        if prediction.label == 'human':
+
+                        if prediction.label == 'person':
                             if not prediction.box in boxList:
                                 boxList.append(prediction.box)
                         if prediction.label == 'chair':
                             if not prediction.box in boxList:
                                 boxList.append(prediction.box)
 
-                    text.append(str(boxList))
+                    startTime = time.time()
 
-                    if len(boxList) > 0:
-                        distance = boxList.index(0).compute_distance(boxList.index(1))
+                    if len(boxList) >= 2:
+                        distance = boxList[0].compute_distance(boxList[1])
+                        text.append(str("Distance:", distance))
                         if abs(distance) < 2:
-                            print("close together")
+                            elapsedTime = time.time() - startTime
+                            if  elapsedTime > 10:
+                                print("Go outside")
                         else:
                             print("far apart")
 
