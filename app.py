@@ -91,7 +91,7 @@ def main():
                     if len(boxList) >= 2:
                         distance = boxList[0].compute_distance(boxList[1])
                         text.append(str(distance))
-                        if abs(distance) < 120:
+                        if abs(distance) < 115:
                             text.append(str("At chair"))
                             if time.time() >= futureTime:
                                 text.append(str("Get Out"))
