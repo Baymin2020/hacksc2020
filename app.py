@@ -40,16 +40,45 @@ def main():
 
                 # Get right shoulder points
                 for ind, pose in enumerate(results.poses):
+                    text.append(str("Right Shoulder Y"))
                     rightShoulder_y = pose.key_points[2][1]
+                    text.append(str(rightShoulder_y))
+
+                    text.append(str("Left Shoulder Y"))
                     leftShoulder_y = pose.key_points[5][1]
+                    text.append(str(leftShoulder_y))
+
+                    text.append(str("Right Elbow Y"))
                     rightElbow_y = pose.key_points[3][1]
+                    text.append(str(rightElbow_y))
+
+                    text.append(str("Right Elbow X"))
                     rightElbow_x = pose.key_points[3][0]
+                    text.append(str(rightElbow_x))
+
+                    text.append(str("Left Elbow Y"))
                     leftElbow_y = pose.key_points[6][1]
+                    text.append(str(leftElbow_y))
+
+                    text.append(str("Left Elbow X"))
                     leftElbow_x = pose.key_points[6][0]
+                    text.append(str(leftElbow_x))
+
+                    text.append(str("Right Wrist Y"))
                     rightWrist_y = pose.key_points[4][1]
+                    text.append(str(rightWrist_y))
+
+                    text.append(str("Right Wrist X"))
                     rightWrist_x = pose.key_points[4][0]
+                    text.append(str(rightWrist_x))
+
+                    text.append(str("Left Wrist Y"))
                     leftWrist_y = pose.key_points[7][1]
+                    text.append(str(leftWrist_y))
+
+                    text.append(str("Left Wrist X"))
                     leftWrist_x = pose.key_points[7][0]
+                    text.append(str(leftWrist_x))
 
                 # text.append(str(rightShoulder_y))
                 # text.append(str(leftShoulder_y))
@@ -58,14 +87,14 @@ def main():
                 # text.append(str(rightWrist_y))
                 # text.append(str(leftWrist_y))
 
-                text.append(str(abs(rightWrist_y - leftElbow_y)))
-                text.append(str(abs(rightWrist_x - leftElbow_x)))
-                text.append(str(abs(leftWrist_y - rightElbow_y)))
-                text.append(str(abs(leftWrist_x - rightElbow_x)))
+                # text.append(str(abs(rightWrist_y - leftElbow_y)))
+                # text.append(str(abs(rightWrist_x - leftElbow_x)))
+                # text.append(str(abs(leftWrist_y - rightElbow_y)))
+                # text.append(str(abs(leftWrist_x - rightElbow_x)))
 
                 if (rightWrist_y > rightShoulder_y) and (leftWrist_y > leftShoulder_y):
                     text.append("Mood: Happy")
-                elif abs(rightWrist_y - leftElbow_y) < 40 and abs(rightWrist_x - leftElbow_x) < 40 and abs(lightWrist_y - rightElbow_y) < 40 and abs(leftWrist_x - rightElbow_x) < 40:
+                elif abs(rightWrist_y - leftElbow_y) < 40 and abs(rightWrist_x - leftElbow_x) < 40 and abs(leftWrist_y - rightElbow_y) < 40 and abs(leftWrist_x - rightElbow_x) < 40:
                     text.append("Mood: Angry")
                 else:
                     text.append("Mood: Idle")
